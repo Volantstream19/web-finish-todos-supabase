@@ -2,9 +2,15 @@
 // this will check if we have a user and set signout link if it exists
 import './auth/user.js';
 // Part A: import create todo
-// Part B: import get todos
-// Part C: import complete todos
-// Part D: import delete all function
+import {
+    createTodo,
+    // Part B: import get todos
+    getTodos,
+    // Part C: import complete todos
+    completeTodo,
+    // Part D: import delete all function
+    deleteAllTodos,
+} from '/fetch-utils.js';
 import { renderTodo } from './render-utils.js';
 
 /* Get DOM Elements */
@@ -21,11 +27,19 @@ let error = null;
 
 window.addEventListener('load', async () => {
     // > Part B: Add a click event listener for the todoEl
-    //      - call the async supabase function to delete all todos
-    //        and get the response
+    //      - call the async supabase function to get todos
+    const response = await getTodos();
     //      - set the todos and error state from the response
+    todos = response.data;
+    error = response.error;
     //      - if there's an error call displayError
+    if (error) {
+        displayError();
+    }
     //      - otherwise, display the todos
+    if (todos) {
+        displayTodos();
+    }
 });
 
 addTodoForm.addEventListener('submit', async (e) => {
@@ -36,7 +50,7 @@ addTodoForm.addEventListener('submit', async (e) => {
     };
 
     // > Part A: Call the function to create a todo, passing in "newTodo":
-    const response = await null; // ???
+    const response = await createTodo(newTodo);
     error = response.error;
     const todo = response.data;
 
@@ -51,14 +65,14 @@ addTodoForm.addEventListener('submit', async (e) => {
 
 removeButton.addEventListener('click', async () => {
     // > Part D: Call the async supabase function to delete all todos
-    const response = null; // change me
+    const response = await deleteAllTodos();
     error = response.error;
 
     if (error) {
         displayError();
     } else {
         // > Part D: reset todos state to an empty array:
-
+        todos = [];
         displayTodos();
     }
 });
@@ -83,10 +97,23 @@ function displayTodos() {
         // > Part C: Add a click event listener for the todoEl
         //      - call the async supabase function to delete all todos
         //        and get the response
-        //      - if there's an error, set error state and call displayError
-        //      - otherwise:
-        //          - find the index of todo in todos
-        //          - update that index of todos with the response data
-        //          - redisplay the todos
+        todoEl.addEventListener('click', async () => {
+            const response = await completeTodo(todo.id);
+            error = response.error;
+            const updateTodo = response.data;
+
+            //      - if there's an error, set error state and call displayError
+            if (error) {
+                displayError();
+                //      - otherwise:
+            } else {
+                //          - find the index of todo in todos
+                const index = todos.indexOf(todo);
+                //          - update that index of todos with the response data
+                todos[index] = updateTodo;
+                //          - redisplay the todos
+                displayTodos();
+            }
+        });
     }
 }
