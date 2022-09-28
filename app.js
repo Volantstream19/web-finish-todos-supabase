@@ -4,8 +4,9 @@ import './auth/user.js';
 // Part A: import create todo
 import {
     createTodo,
-}
-// Part B: import get todos
+    // Part B: import get todos
+    getTodos,
+} from '/fetch-utils.js';
 // Part C: import complete todos
 // Part D: import delete all function
 import { renderTodo } from './render-utils.js';
@@ -26,9 +27,18 @@ window.addEventListener('load', async () => {
     // > Part B: Add a click event listener for the todoEl
     //      - call the async supabase function to delete all todos
     //        and get the response
+    const response = await getTodos();
     //      - set the todos and error state from the response
+    todos = response.data;
+    error = response.error;
     //      - if there's an error call displayError
+    if (error) {
+        displayError();
+    }
     //      - otherwise, display the todos
+    if (todos) {
+        displayTodos();
+    }
 });
 
 addTodoForm.addEventListener('submit', async (e) => {
