@@ -6,8 +6,9 @@ import {
     createTodo,
     // Part B: import get todos
     getTodos,
+    // Part C: import complete todos
+    completeTodo,
 } from '/fetch-utils.js';
-// Part C: import complete todos
 // Part D: import delete all function
 import { renderTodo } from './render-utils.js';
 
@@ -25,8 +26,7 @@ let error = null;
 
 window.addEventListener('load', async () => {
     // > Part B: Add a click event listener for the todoEl
-    //      - call the async supabase function to delete all todos
-    //        and get the response
+    //      - call the async supabase function to get todos
     const response = await getTodos();
     //      - set the todos and error state from the response
     todos = response.data;
@@ -96,10 +96,23 @@ function displayTodos() {
         // > Part C: Add a click event listener for the todoEl
         //      - call the async supabase function to delete all todos
         //        and get the response
-        //      - if there's an error, set error state and call displayError
-        //      - otherwise:
-        //          - find the index of todo in todos
-        //          - update that index of todos with the response data
-        //          - redisplay the todos
+        todoEl.addEventListener('click', async () => {
+            const response = await completeTodo(todo.id);
+            error = response.error;
+            const updateTodo = response.data;
+
+            //      - if there's an error, set error state and call displayError
+            if (error) {
+                displayError();
+                //      - otherwise:
+            } else {
+                //          - find the index of todo in todos
+                const index = todos.indexOf(todo);
+                //          - update that index of todos with the response data
+                todos[index] = updateTodo;
+                //          - redisplay the todos
+                displayTodos();
+            }
+        });
     }
 }
